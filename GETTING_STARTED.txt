@@ -1,0 +1,30 @@
+OpenCord 0.6.0
+
+Windows:
+1. Install Node.js 24 or newer.
+2. Run launcher.bat.
+3. Click Install / Update.
+4. Click Start.
+5. Click Open browser.
+6. Register the first account to create the instance administrator.
+
+Terminal:
+npm install
+npm run build
+npm start
+
+Local URL:
+http://localhost:4000
+
+For public hosting with HTTPS, read:
+docs/PUBLIC_HOSTING.md
+
+Back up these paths before upgrades:
+data/opencord.db
+uploads/
+
+Legal documents:
+TERMS_OF_USE.md
+ACCEPTABLE_USE_POLICY.md
+PRIVACY.md
+LICENSE

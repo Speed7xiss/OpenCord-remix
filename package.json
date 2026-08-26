@@ -1,0 +1,32 @@
+{
+  "name": "opencord-selfhost",
+  "version": "0.6.0",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,magenta \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w client && npm run build -w server",
+    "start": "node scripts/ensure-build.mjs && npm run start -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "description": "Self-hosted real-time community chat with text, voice, video, moderation, and instance administration.",
+  "license": "MIT",
+  "keywords": [
+    "self-hosted",
+    "chat",
+    "webrtc",
+    "socket.io",
+    "react",
+    "sqlite",
+    "community"
+  ],
+  "author": "Harukai33"
+}

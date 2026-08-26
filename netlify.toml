@@ -1,0 +1,24 @@
+# Netlify build configuration for OpenCord (frontend only)
+# The backend (Node/Express) must be hosted separately (e.g., Railway, Render, VPS)
+# Set VITE_API_URL in Netlify environment variables to point to your backend URL
+
+[build]
+  base    = "client"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Redirect all routes to index.html for SPA routing
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
+
+# Optional: redirect /api/* to your backend (set BACKEND_URL in Netlify env)
+# [[redirects]]
+#   from   = "/api/*"
+#   to     = ":BACKEND_URL/api/:splat"
+#   status = 200
+#   force  = true

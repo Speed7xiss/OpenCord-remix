@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: opencord-server
+    runtime: node
+    region: oregon      # troque para "frankfurt" se quiser servidor na Europa
+    plan: starter       # plano Starter ($7/mês) é necessário para disco persistente
+                        # no plano Free os dados SE PERDEM a cada deploy
+
+    buildCommand: npm install && npm run build -w server
+    startCommand: node server/dist/index.js
+
+    # Discos persistentes — mantêm o banco SQLite e os uploads entre deploys
+    disk:
+      name: opencord-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 2
+
+    envVars:
+      # Ambiente
+      - key: NODE_ENV
+        value: production
+
+      # Render usa a porta 10000 por padrão
+      - key: PORT
+        value: "10000"
+
+      # Render fica atrás de proxy reverso
+      - key: TRUST_PROXY
+        value: "1"
+
+      # Cookies seguros (obrigatório com HTTPS)
+      - key: COOKIE_SECURE
+        value: "true"
+
+      # ────────────────────────────────────────────────────
+      # TROQUE os valores abaixo pela URL real do seu Netlify
+      # Ex: https://meu-opencord.netlify.app
+      # ────────────────────────────────────────────────────
+      - key: PUBLIC_URL
+        value: "https://SEU-SITE.netlify.app"
+
+      - key: ALLOWED_ORIGINS
+        value: "https://SEU-SITE.netlify.app"
