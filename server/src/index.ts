@@ -45,12 +45,35 @@ fs.mkdirSync(uploadDir, { recursive: true });
 
 const isDevelopment = process.env.NODE_ENV === 'development' || process.env.npm_lifecycle_event === 'dev';
 
+const configuredOrigins = new Set(
+  [process.env.PUBLIC_URL, ...(process.env.ALLOWED_ORIGINS ?? '').split(',')]
+    .map((value) => value?.trim())
+    .filter((value): value is string => Boolean(value))
+    .flatMap((value) => {
+      try {
+        return [new URL(value).origin];
+      } catch {
+        console.warn(`Invalid configured origin ignored: ${value}`);
+        return [];
+      }
+    }),
+);
+
+function isAllowedCorsOrigin(origin: string) {
+  if (isDevelopment && /^http:\/\/(?:localhost|127\.0\.0\.1):5173$/.test(origin)) return true;
+  return configuredOrigins.has(origin);
+}
+
 const app = express();
 const server = http.createServer(app);
 const io = new SocketServer(server, {
-  cors: isDevelopment
-    ? { origin: [/^http:\/\/(?:localhost|127\.0\.0\.1):5173$/], credentials: true }
-    : undefined,
+  cors: {
+    origin: (origin, callback) => {
+      if (!origin || isAllowedCorsOrigin(origin)) return callback(null, true);
+      return callback(null, false);
+    },
+    credentials: true,
+  },
   maxHttpBufferSize: 2_000_000,
 });
 
@@ -73,24 +96,17 @@ app.use(helmet({
   },
 }));
 app.use(compression());
-app.use(cors({ origin: isDevelopment ? [/^http:\/\/(?:localhost|127\.0\.0\.1):5173$/] : false, credentials: true }));
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || isAllowedCorsOrigin(origin)) return callback(null, true);
+    return callback(null, false);
+  },
+  credentials: true,
+}));
 app.use(express.json({ limit: '512kb' }));
 app.use(express.urlencoded({ extended: false, limit: '512kb' }));
 app.use('/uploads', express.static(uploadDir, { fallthrough: false, maxAge: '1h' }));
-
-const configuredOrigins = new Set(
-  [process.env.PUBLIC_URL, ...(process.env.ALLOWED_ORIGINS ?? '').split(',')]
-    .map((value) => value?.trim())
-    .filter((value): value is string => Boolean(value))
-    .flatMap((value) => {
-      try {
-        return [new URL(value).origin];
-      } catch {
-        console.warn(`Invalid configured origin ignored: ${value}`);
-        return [];
-      }
-    }),
-);
 
 function isLoopbackHostname(hostname: string) {
   return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]' || hostname === '::1';
@@ -124,10 +140,6 @@ function isAllowedRequestOrigin(req: express.Request, originHeader: string) {
 
 app.use((req, res, next) => {
   if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
-
-  if (req.get('sec-fetch-site') === 'cross-site') {
-    return res.status(403).json({ error: 'Invalid origin.' });
-  }
 
   const origin = req.get('origin');
   if (!origin) return next();
