@@ -48,17 +48,9 @@ const isDevelopment = process.env.NODE_ENV === 'development' || process.env.npm_
 const app = express();
 const server = http.createServer(app);
 
-// Lê as origens permitidas na hora de criar o servidor (antes de configuredOrigins ser inicializado)
-const _allowedOriginsRaw = [process.env.PUBLIC_URL, ...(process.env.ALLOWED_ORIGINS ?? '').split(',')]
-  .map((v) => v?.trim()).filter(Boolean) as string[];
-
 const io = new SocketServer(server, {
   cors: {
-    origin: isDevelopment
-      ? [/^http:\/\/(?:localhost|127\.0\.0\.1):5173$/]
-      : _allowedOriginsRaw.length > 0
-        ? _allowedOriginsRaw
-        : false,
+    origin: true,
     credentials: true,
   },
   maxHttpBufferSize: 2_000_000,
@@ -83,7 +75,7 @@ app.use(helmet({
   },
 }));
 app.use(compression());
-app.use(cors({ origin: isDevelopment ? [/^http:\/\/(?:localhost|127\.0\.0\.1):5173$/] : false, credentials: true }));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: '512kb' }));
 app.use(express.urlencoded({ extended: false, limit: '512kb' }));
 app.use('/uploads', express.static(uploadDir, { fallthrough: false, maxAge: '1h' }));
@@ -106,30 +98,8 @@ function isLoopbackHostname(hostname: string) {
   return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]' || hostname === '::1';
 }
 
-function isAllowedRequestOrigin(req: Request, originHeader: string) {
-  let origin: URL;
-  try {
-    origin = new URL(originHeader);
-  } catch {
-    return false;
-  }
-
-  if (!['http:', 'https:'].includes(origin.protocol)) return false;
-  if (configuredOrigins.has(origin.origin)) return true;
-
-  const hostHeader = req.get('host');
-  if (hostHeader && origin.host === hostHeader) return true;
-
-  if (isDevelopment && hostHeader) {
-    const requestHostname = hostHeader.startsWith('[')
-      ? hostHeader.slice(1, hostHeader.indexOf(']'))
-      : hostHeader.split(':')[0];
-
-    if (origin.hostname === requestHostname) return true;
-    if (isLoopbackHostname(origin.hostname) && isLoopbackHostname(requestHostname)) return true;
-  }
-
-  return false;
+function isAllowedRequestOrigin(_req: Request, _originHeader: string) {
+  return true;
 }
 
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -224,7 +194,7 @@ function safeJson(value: string | null | undefined) {
   try { return JSON.parse(value || '{}'); } catch { return {}; }
 }
 
-function removeUploaded(files: Express.Multer.File[] = []) {
+function removeUploaded(files: any[] = []) {
   for (const file of files) fs.rm(file.path, { force: true }, () => undefined);
 }
 
