@@ -8,28 +8,28 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@types/better-sqlite3": "^7.6.13",
-    "@types/compression": "^1.8.1",
-    "@types/cookie": "^0.6.0",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/multer": "^2.2.0",
-    "@types/node": "^24.13.3",
     "bcryptjs": "^3.0.2",
     "better-sqlite3": "^13.0.3",
-    "compression": "^1.8.1",
     "cookie": "^1.0.2",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "express-rate-limit": "^8.0.1",
     "helmet": "^8.1.0",
     "multer": "^2.0.2",
     "socket.io": "^4.8.3",
-    "zod": "^4.0.17"
+    "zod": "^4.0.17",
+    "dotenv": "^17.2.2",
+    "compression": "^1.8.1"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/cookie": "^0.6.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.3.0",
     "tsx": "^4.20.5",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "@types/compression": "^1.8.1"
   }
 }
