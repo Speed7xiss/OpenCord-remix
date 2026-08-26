@@ -31,11 +31,10 @@ services:
         value: "true"
 
       # ────────────────────────────────────────────────────
-      # TROQUE os valores abaixo pela URL real do seu Netlify
-      # Ex: https://meu-opencord.netlify.app
+      # URL do front-end (Vercel)
       # ────────────────────────────────────────────────────
       - key: PUBLIC_URL
-        value: "https://SEU-SITE.netlify.app"
+        value: "https://open-cord-remix-client-k5l6.vercel.app"
 
       - key: ALLOWED_ORIGINS
-        value: "https://SEU-SITE.netlify.app"
+        value: "https://open-cord-remix-client-k5l6.vercel.app"
