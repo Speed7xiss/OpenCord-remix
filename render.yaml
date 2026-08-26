@@ -25,7 +25,7 @@ services:
         value: "true"
 
       - key: PUBLIC_URL
-        value: "https://open-cord-remix-client-k5l6.vercel.app"
+        value: "https://opencordweb.vercel.app"
 
       - key: ALLOWED_ORIGINS
-        value: "https://open-cord-remix-client-k5l6.vercel.app"
+        value: "https://opencordweb.vercel.app"
