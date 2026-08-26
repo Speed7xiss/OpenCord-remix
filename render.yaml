@@ -2,37 +2,25 @@ services:
   - type: web
     name: opencord-server
     runtime: node
-    region: oregon      # troque para "frankfurt" se quiser servidor na Europa
-    plan: free          # sem cartão, mas sem disco persistente:
-                        # banco SQLite e uploads somem a cada deploy/restart,
-                        # e o serviço dorme após 15min sem uso
+    region: oregon
+    plan: free
 
     buildCommand: npm install && npm run build -w server
     startCommand: node server/dist/index.js
 
-    # Sem "disk:" aqui — plano Free não suporta disco persistente.
-    # data/opencord.db e uploads/ são recriados do zero a cada deploy/sleep.
-
     envVars:
-      # Ambiente
       - key: NODE_ENV
         value: production
 
-      # Render usa a porta 10000 por padrão
       - key: PORT
         value: "10000"
 
-      # Render fica atrás de proxy reverso
       - key: TRUST_PROXY
         value: "1"
 
-      # Cookies seguros (obrigatório com HTTPS)
       - key: COOKIE_SECURE
         value: "true"
 
-      # ────────────────────────────────────────────────────
-      # URL do front-end (Vercel)
-      # ────────────────────────────────────────────────────
       - key: PUBLIC_URL
         value: "https://open-cord-remix-client-k5l6.vercel.app"
 
