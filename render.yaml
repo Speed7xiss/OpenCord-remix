@@ -9,6 +9,9 @@ services:
     startCommand: node server/dist/index.js
 
     envVars:
+      - key: NODE_VERSION
+        value: "24.7.0"
+
       - key: NODE_ENV
         value: production
 
