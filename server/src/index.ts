@@ -168,7 +168,13 @@ function makeUpload(allowed: Map<string, string>, maxBytes: number) {
       filename: (_req, file, callback) => callback(null, `${crypto.randomUUID()}${allowed.get(file.mimetype) ?? '.bin'}`),
     }),
     limits: { fileSize: maxBytes },
-    fileFilter: (_req, file, callback) => callback(allowed.has(file.mimetype) ? null : new Error('File type not allowed.'), allowed.has(file.mimetype)),
+    fileFilter: (_req, file, callback) => {
+      if (allowed.has(file.mimetype)) {
+        callback(null, true);
+      } else {
+        callback(new Error('File type not allowed.'));
+      }
+    },
   });
 }
 
@@ -1103,14 +1109,14 @@ app.patch('/api/channels/:channelId', requireAuth, (req: AuthenticatedRequest, r
   }
   db.prepare('UPDATE channels SET name = ?, parent_id = ?, topic = ?, user_limit = ?, bitrate = ?, position = ? WHERE id = ?').run(
     parsed.data.name ?? row.name,
-    row.kind === 'CATEGORY' ? null : (parsed.data.parentId !== undefined ? parsed.data.parentId : row.parent_id),
+    row.kind === 'CATEGORY' ? null : (parsed.data.parentId !== undefined ? (parsed.data.parentId ?? undefined) : (row.parent_id ?? undefined)),
     parsed.data.topic ?? row.topic,
     parsed.data.userLimit ?? row.user_limit,
     parsed.data.bitrate ?? row.bitrate,
     parsed.data.position ?? row.position,
     channelId,
   );
-  audit(Number(row.server_id), req.user!.id, 'CHANNEL_UPDATE', 'CHANNEL', channelId, parsed.data);
+  audit(Number(row.server_id), req.user!.id, 'CHANNEL_UPDATE', 'CHANNEL', channelId ?? undefined, parsed.data);
   emitServerRefresh(Number(row.server_id));
   return res.status(204).end();
 });
