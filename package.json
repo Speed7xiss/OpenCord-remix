@@ -15,7 +15,7 @@
     "concurrently": "^9.2.1"
   },
   "engines": {
-    "node": ">=24.0.0"
+    "node": "24.x"
   },
   "description": "Self-hosted real-time community chat with text, voice, video, moderation, and instance administration.",
   "license": "MIT",
