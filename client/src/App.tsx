@@ -198,7 +198,7 @@ export function App() {
     void loadFriends().catch((error) => notify(getErrorMessage(error)));
     void loadGroups().catch(() => undefined);
     socket.connect();
-    return () => socket.disconnect();
+    return () => { socket.disconnect(); };
   }, [me, loadFriends, loadGroups, loadServers, notify]);
 
   useEffect(() => {
