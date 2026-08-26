@@ -3,17 +3,15 @@ services:
     name: opencord-server
     runtime: node
     region: oregon      # troque para "frankfurt" se quiser servidor na Europa
-    plan: starter       # plano Starter ($7/mês) é necessário para disco persistente
-                        # no plano Free os dados SE PERDEM a cada deploy
+    plan: free          # sem cartão, mas sem disco persistente:
+                        # banco SQLite e uploads somem a cada deploy/restart,
+                        # e o serviço dorme após 15min sem uso
 
     buildCommand: npm install && npm run build -w server
     startCommand: node server/dist/index.js
 
-    # Discos persistentes — mantêm o banco SQLite e os uploads entre deploys
-    disk:
-      name: opencord-data
-      mountPath: /opt/render/project/src/data
-      sizeGB: 2
+    # Sem "disk:" aqui — plano Free não suporta disco persistente.
+    # data/opencord.db e uploads/ são recriados do zero a cada deploy/sleep.
 
     envVars:
       # Ambiente
