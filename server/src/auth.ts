@@ -67,20 +67,22 @@ export function requireInstanceAdmin(req: AuthenticatedRequest, res: Response, n
 }
 
 export function setSessionCookie(res: Response, token: string, expiresAt: number) {
+  const secure = process.env.COOKIE_SECURE === 'true';
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.COOKIE_SECURE === 'true',
+    sameSite: secure ? 'none' : 'lax',
+    secure,
     expires: new Date(expiresAt),
     path: '/',
   });
 }
 
 export function clearSessionCookie(res: Response) {
+  const secure = process.env.COOKIE_SECURE === 'true';
   res.clearCookie(COOKIE_NAME, {
     httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.COOKIE_SECURE === 'true',
+    sameSite: secure ? 'none' : 'lax',
+    secure,
     path: '/',
   });
 }
