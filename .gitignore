@@ -141,3 +141,9 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+  
+# local runtime data (has its own disk on Render)  
+data/  
+uploads/  
+client/dist/  
+server/dist/  
